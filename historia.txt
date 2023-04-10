@@ -1,5 +1,7 @@
 Esta es la historia del Oso panda
 
-El oso panda tiene 33 años y es originario de china, viviendo en todo el mundo
+El oso panda tiene 32 años y es originario de china
 
-Hoy hablaremos de su vida maestra.
+Hoy hablaremos de su historia.
+
+Regresamos al primer commit y modificamos.
