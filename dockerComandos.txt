@@ -1,0 +1,82 @@
+Docker - Comandos
+
+docker ps //ver los contenedores que estan corriendo
+docker ps -a //ver todos los contenedores que estan creados
+docker run contenedor //ejecuta el contenedor y si no existe lo descarga
+docker pull contenedor //descarga el contenedor especificado
+docker pull contenedor:3.7 //descarga el conetenedor con version especificado
+docker run -it contenedor sh //terminal interactiva ejecutando shell sh
+docker exec -it idcontenedor sh //ingreso interactivo al contenedor con shell sh
+
+docker run -it ubuntu /bin/bash //correr contenedor e ingresar interactivo con shell bash
+docker commit idcontenedor //crea una imagen del contenedor modificado
+docker image tag idimagen midocker //nombre para la imagen
+docker image tag idimagen midocker:1.0 //crea nuea imagen con otro TAG
+
+Dockerfile
+FROM ubuntu
+
+RUN apt-get update && apt-get install figlet -y
+
+docker build -t midocker:1.1 . //contruye una imagen desde un Dockerfile
+docker image history idimagen  //muestra los comandos que ejecuta la imagen
+
+docker run -d nginx:1.25.4 //corre el contenedor y lo deja corriendo
+docker run -v ~/home/index.html:/usr/share/nginx/html/index.html -d nginx:1.25.4 //montar index.html dentro del contenedor
+docker run -v ~/home/index.html:/usr/share/nginx/html/index.html -p 8080:80 -d nginx:1.25.4 //exponer puerto 8080 en pc local
+
+Escenario
+docker run -e MYSQL_ROOT_PASSWORD=miclave -v ~/mysqldata:/var/lib/mysql -d mysql:8.0.13
+Solucion = Docker Compose
+version: '3.1'
+
+services:
+  wordpress:
+    image: wordpress:php7.2-apache
+    ports:
+      -8080:80
+    environment:
+      WORDPRESS_DB_HOST: mysql
+      WORDPRESS_DB_USER: root
+      WORDPRESS_DB_PASSWORD: root
+      WORDPRESS_DB_NAME: wordpress
+    links:
+      - mysql:mysql
+  
+  mysql:
+    image: mysql:8.0.13
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL__DATABASE: wordpress
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - ~/docker/mysql-data:/var/lib/mysql
+
+docker-compose up -d
+
+NETWORKING
+bridge //cuando compartis un puerto se hace como un puente
+host //usa la misma ip de tu maquina
+overlay //que todos los contenedores vaya sobre la misma red
+macvlan //asigna una MAC a un contenedor
+none //desactiva el networking en el contenedor
+
+
+docker image ls //lista las imagenes de contenedores descargadas
+docker logs contenedor //ver el log del contenedor especificado
+docker logs -f contenedor  //muestra el log en tiempo real
+docker logs -f contenedor | tee log.txt //muestra el log en tiempo real y lo escribe en un fichero
+
+alpine es un linux muy pequeño que se usa para contenedores
+
+docker save idimagen > snapshot.tar //hace un backup de la imagen seleccionada
+docker load < snapshot.tar //Cargar a mis imagenes de docker en otro servidor
+
+docker top idcontenedor //muestra los procesos que esta corriendo el contenedor
+docker diff idcontenedor //muestra la diferencia de la primera vez que arranco a lo actual
+docker history idimagen //muestra los paso que utilizo para crear la imagen
+docker pause idcontenedor //pausa el contenedor y no podremos acceder a el
+docker unpause idcontenedor //quita la pausa al contenedor
+
+docker search wordpress //busca imagenes de wordpress
+docker update --restart=stopped idcontenedor //cuando inicie la maquina ese contenedor va a iniciar
